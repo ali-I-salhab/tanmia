@@ -16,10 +16,13 @@ class MostafedController extends Controller
         ->orderBy('village', 'asc')
         ->pluck('village');
         $query = Mostafed::query();
+
+
         $mainvillages = Mostafed::select('main_village')
         ->distinct()
         ->orderBy('main_village', 'asc')
         ->pluck('main_village');
+        
         $query = Mostafed::query();
     
         // Apply dropdown filters
