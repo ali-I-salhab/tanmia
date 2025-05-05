@@ -15,4 +15,9 @@ class Plan extends Model
     {
         return $this->belongsTo(Supporter::class);
     }
+    public function plans()
+{
+    return $this->belongsToMany(Plan::class);
+}
+
 }

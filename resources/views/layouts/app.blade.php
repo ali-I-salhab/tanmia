@@ -16,6 +16,9 @@
 
   <!-- slider stylesheet -->
   <!-- slider stylesheet -->
+  <!-- Add this in your layout file in the <head> section -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <link rel="stylesheet" type="text/css"
     href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
 
