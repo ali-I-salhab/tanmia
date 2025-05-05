@@ -2,12 +2,13 @@
 
 namespace App\Exports;
 
-use App\Models\Mostafed;
+use App\Models\Benifite;
+use App\Models\benifites;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class MostafedExport implements FromCollection, WithHeadings
+class BenifiteExport implements FromCollection, WithHeadings
 {
     protected $filters;
 
@@ -18,7 +19,7 @@ class MostafedExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        $query = Mostafed::query();
+        $query = Benifite::query();
 
         if (!empty($this->filters['village'])) {
             $query->where('village', $this->filters['village']);

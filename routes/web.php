@@ -1,37 +1,40 @@
 <?php
 
-use App\Http\Controllers\MostafedController;
-use App\Models\Mostafed;
+use App\Http\Controllers\BenifiteController;
+use App\Models\benifites;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Exports\MostafedExport;
+use App\Exports\BenifiteExport;
+use App\Http\Controllers\PlanController;
 use App\Http\Middleware\AuthAdmin;
 use Maatwebsite\Excel\Facades\Excel;
 Route::get('/', function () {
-    return view('mostafed.index');
+    return view('benifites.index');
 })->name('index');
 
 Auth::routes();
 Route::middleware(['auth',AuthAdmin::class])->group(function () {
-    Route::get('/mostafed', action: [MostafedController::class, 'index'])->name('mostafed.mostafed');
-    Route::get('/mostafed/{id}/edit', [MostafedController::class, 'edit'])->name('mostafed.edit');
-    Route::put('/mostafed/{id}', [MostafedController::class, 'update'])->name('mostafed.update');
+    Route::get('/benifites', action: [BenifiteController::class, 'index'])->name('benifites.benifites');
+    Route::get('/benifites/{id}/edit', [BenifiteController::class, 'edit'])->name('benifites.edit');
+    Route::put('/benifites/{id}', [BenifiteController::class, 'update'])->name('benifites.update');
     
-    Route::get('/mostafed/create', [MostafedController::class, 'create'])->name('mostafed.create');
-    Route::post('/mostafed', [MostafedController::class, 'store'])->name('mostafed.store');
-    Route::get('/mostafed/{id}/edit', [MostafedController::class, 'edit'])->name('mostafed.edit');
-    Route::put('/mostafed/{id}', [MostafedController::class, 'update'])->name('mostafed.update');
-    Route::delete('/mostafed/{id}', [MostafedController::class, 'destroy'])->name('mostafed.destroy');
+    Route::get('/benifites/create', [BenifiteController::class, 'create'])->name('benifites.create');
+    Route::post('/benifites', [BenifiteController::class, 'store'])->name('benifites.store');
+    Route::get('/benifites/{id}/edit', [BenifiteController::class, 'edit'])->name('benifites.edit');
+    Route::put('/benifites/{id}', [BenifiteController::class, 'update'])->name('benifites.update');
+    Route::delete('/benifites/{id}', [BenifiteController::class, 'destroy'])->name('benifites.destroy');
     
-    Route::get('/mostafed/export', function (Illuminate\Http\Request $request) {
-        return Excel::download(new MostafedExport($request->all()), 'mostafed.xlsx');
-    })->name('mostafed.export');
+    Route::get('/benifites/export', function (Illuminate\Http\Request $request) {
+        return Excel::download(new BenifiteExport($request->all()), 'benifites.xlsx');
+    })->name('benifites.export');
 
 });
-Route::resource('plans', \App\Http\Controllers\PlanController::class);
+Route::get('/locations', [BenifiteController::class, 'index'])->name('locations.index');
+Route::get('/get-units', [BenifiteController::class, 'getUnits'])->name('get.units');
+Route::get('/get-villages', [BenifiteController::class, 'getVillages'])->name('get.villages');
 
-
-
+Route::get('/benifites/export', [BenifiteController::class, 'export'])->name('benifites.export');
+Route::get('/benifites/export/pdf', [BenifiteController::class, 'exportPdf'])->name('benifites.export.pdf');
 
 Route::post('logout', function () {
     Auth::logout();
@@ -40,3 +43,11 @@ Route::post('logout', function () {
 use App\Http\Controllers\SupporterController;
 
 Route::get('/supporters', [SupporterController::class, 'index'])->name('supporters.index');
+Route::resource('supporters', SupporterController::class);
+Route::resource('plans', PlanController::class);
+Route::get('/plans/{plan}/select-beneficiaries', [PlanController::class, 'selectBeneficiaries'])->name('plans.select.beneficiaries');
+Route::post('/plans/{plan}/attach-beneficiaries', [PlanController::class, 'attachBeneficiaries'])->name('plans.attach.beneficiaries');
+Route::get('/plans/{id}', [PlanController::class, 'show'])->name('plans.show');
+Route::get('/get-units', [BenifiteController::class, 'getUnits'])->name('get.units');
+Route::get('/get-villages', [BenifiteController::class, 'getVillages'])->name('get.villages');
+Route::get('/benifites/get-villages/{adminUnitId}', [BenifiteController::class, 'getVillagesByAdminUnit']);
