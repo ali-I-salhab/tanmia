@@ -35,11 +35,11 @@
                 <label for="village_id" class="form-label">القرية</label>
                 <select name="village_id" id="villageSelect" class="form-control" required>
                     <option value="" selected disabled>اختر القرية</option>
-                    @foreach($benifites->adminUnit->villages as $village)
+                    {{-- @foreach($benifites->adminUnit->villages as $village)
                         <option value="{{ $village->id }}" {{ old('village_id', $benifites->village_id) == $village->id ? 'selected' : '' }}>
                             {{ $village->name }}
                         </option>
-                    @endforeach
+                    @endforeach --}}
                 </select>
             </div>
         </div>

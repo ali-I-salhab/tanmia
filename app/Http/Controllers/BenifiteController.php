@@ -11,6 +11,7 @@ use App\Exports\BenifitesExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Str;
 
 class BenifiteController extends Controller
 
@@ -86,14 +87,23 @@ public function getVillages(Request $request)
     
         // Start query
         $query = Benifite::query();
-    
         // Apply filters
-        if ($request->filled('village')) {
-            $query->where('village', $request->village);
+        if ($request->filled('village')){
+
+
+      
+        $nameofvillagebaseddonid=AdLevelThree::find($request->village)->name;
+        // dd($nameofvillagebaseddonid);
+
+            $query->where('village', operator: $nameofvillagebaseddonid);
         }
     
-        if ($request->filled('adminstratour_unit')) {
-            $query->where('adminstratour_unit', $request->adminstratour_unit);
+        if ($request->filled('unit')) {
+
+            $nameofadmbaseddonid=AdLevelTwo::find($request->unit)->name;
+            // dd($request->unit, $nameofadmbaseddonid);
+            // $query->where('adminstratour_unit', $nameofadmbaseddonid);
+            $query->where('adminstratour_unit', 'LIKE', '%' . $nameofadmbaseddonid . '%');
         }
     
         if ($request->filled('min_age')) {
@@ -173,7 +183,7 @@ public function exportPdf(Request $request)
             'national_id' => 'nullable|string|max:28',
             'mobile' => 'nullable|string|max:38',
             'location' => 'nullable|string|max:30',
-            'social_status' => 'nullable|string|max:5',
+            'social_status' => 'nullable|string',
             'childs_need_milk' => 'nullable|string|max:27',
             'childs_in_school' => 'nullable|string|max:17',
             'supporter' => 'nullable|string|max:2',
@@ -183,7 +193,7 @@ public function exportPdf(Request $request)
             'sickers_num' => 'nullable|string|max:190',
             'eaka' => 'nullable|string|max:136',
         ]);
-    
+    // dd($request->all());
         Benifite::create($request->all());
     
         return redirect()->route('benifites.benifites')->with('success', 'تمت إضافة المستفيد بنجاح');

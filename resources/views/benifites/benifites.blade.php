@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mt-4">
+    <div class="container mt-2">
         <h2 class="mb-4 text-center">فلترة المستفيدين</h2>
         <div class="d-flex justify-content-end mb-3">
             <a href="{{ route('benifites.create') }}" class="btn btn-success">
                 إضافة مستفيد جديد <i class="fas fa-plus"></i>
             </a>
         </div>
-        
+
         <!-- Filter Form -->
         <form method="GET" action="{{ route('benifites.benifites') }}" class="row g-3 mb-4">
             <div class="col-md-4">
@@ -16,11 +16,12 @@
                 <select name="city" id="city" class="form-control">
                     <option value="">اختر المدينة</option>
                     @foreach($cities as $city)
-                        <option value="{{ $city->id }}" @if(request('city') == $city->id) selected @endif>{{ $city->name }}</option>
+                        <option value="{{ $city->id }}" @if(request('city') == $city->id) selected @endif>{{ $city->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
-            
+
             <div class="col-md-4">
                 <label for="unit">الوحدة الإدارية:</label>
                 <select name="unit" id="unit" class="form-control">
@@ -28,7 +29,7 @@
                     {{-- This will be filled dynamically --}}
                 </select>
             </div>
-            
+
             <div class="col-md-4">
                 <label for="village">القرية:</label>
                 <select name="village" id="village" class="form-control">
@@ -36,29 +37,29 @@
                     {{-- This will be filled dynamically --}}
                 </select>
             </div>
-            
-        
+
+
             <div class="col-md-4">
                 <div class="dropdown-group">
                     <label>الاسم:</label>
                     <input type="text" name="name" class="form-control" value="{{ request('name') }}">
                 </div>
             </div>
-        
+
             <div class="col-md-4">
                 <div class="dropdown-group">
                     <label>نوع المرض:</label>
                     <input type="text" name="sick_type" class="form-control" value="{{ request('sick_type') }}">
                 </div>
             </div>
-        
+
             <div class="col-md-4">
                 <div class="dropdown-group">
                     <label>العمر من:</label>
                     <input type="number" name="min_age" class="form-control" value="{{ request('min_age') }}">
                 </div>
             </div>
-        
+
             <div class="col-md-4">
                 <div class="dropdown-group">
                     <label>العمر إلى:</label>
@@ -74,12 +75,12 @@
                 </div>
             </div>
             <!-- Number of Results Display -->
-<div class="col-md-12 mt-3">
-    <div class="mb-3">
-        <label for="record_count" class="form-label">عدد النتائج:</label>
-        <input type="text" id="record_count" class="form-control" value="{{ $data->count() }}" readonly>
-    </div>
-</div>
+            <div class="col-md-12 mt-3">
+                <div class="mb-3">
+                    <label for="record_count" class="form-label">عدد النتائج:</label>
+                    <input type="text" id="record_count" class="form-control" value="{{ $data->count() }}" readonly>
+                </div>
+            </div>
 
             <div class="col-md-12">
                 <div class="mt-3 d-flex justify-content-between">
@@ -88,28 +89,22 @@
                 </div>
             </div>
 
-            <!-- Showing Results Count -->
-            <div class="col-md-12 mt-3">
-                <div class="mb-3">
-                    <label for="record_count" class="form-label">عدد النتائج:</label>
-                    <input type="text" id="record_count" class="form-control" value="{{ $data->total() }}" readonly>
-                </div>
-            </div>
+          
         </form>
-        
+
         <!-- Export Buttons -->
         <div class="mb-3 d-flex gap-2">
             <a href="{{ route('benifites.export', request()->query()) }}" class="btn btn-success">
                 تحميل Excel <i class="fas fa-file-excel"></i>
             </a>
-        
+
             <a href="{{ route('benifites.export.pdf', request()->query()) }}" class="btn btn-danger">
                 تحميل PDF <i class="fas fa-file-pdf"></i>
             </a>
         </div>
 
         <!-- Table to Display Filtered Data -->
-        <div class="table-responsive mt-4 mb-5">
+        <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead class="table-dark text-center">
                     <tr>
@@ -156,7 +151,8 @@
                             <td>{{ $item->adminstratour_unit }}</td>
                             <td>{{ $item->village }}</td>
                             <td>
-                                <form action="{{ route('benifites.destroy', $item->id) }}" method="POST" class="d-inline delete-form">
+                                <form action="{{ route('benifites.destroy', $item->id) }}" method="POST"
+                                    class="d-inline delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger">حذف</button>
@@ -168,10 +164,12 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Pagination -->
-        {{ $data->withQueryString()->links() }}
-    </div>
+        <div style=" width: 10%; height: 3%;">    {{ $data->withQueryString()->links() }}</div>
+
+  </div>
+
 @endsection
 
 @push('scripts')

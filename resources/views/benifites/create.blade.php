@@ -69,9 +69,9 @@
                 <label for="social_status" class="form-label">الحالة الاجتماعية</label>
                 <select name="social_status" id="social_status" class="form-control" required>
                     <option value="" selected disabled>اختر الحالة الاجتماعية</option>
-                    <option value="single" {{ old('social_status') == 'single' ? 'selected' : '' }}>أعزب</option>
-                    <option value="married" {{ old('social_status') == 'married' ? 'selected' : '' }}>متزوج</option>
-                    <option value="divorced" {{ old('social_status') == 'divorced' ? 'selected' : '' }}>مطلق</option>
+                    <option value="أعزب" {{ old('social_status') == 'single' ? 'selected' : '' }}>أعزب</option>
+                    <option value="متزوج" {{ old('social_status') == 'married' ? 'selected' : '' }}>متزوج</option>
+                    <option value="مطلق" {{ old('social_status') == 'divorced' ? 'selected' : '' }}>مطلق</option>
                 </select>
             </div>
             <div class="col-md-6 mb-3">

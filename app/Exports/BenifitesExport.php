@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\AdLevelThree;
 use App\Models\Benifite;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -18,6 +19,7 @@ class BenifitesExport implements FromView
 
     public function view(): View
     {
+        // http://127.0.0.1:8000/benifites?city=4&unit=66&village=4137&name=&sick_type=&min_age=&max_age=&data_count=
         $query = Benifite::query();
 
         if ($this->request->filled('name')) {
@@ -37,7 +39,12 @@ class BenifitesExport implements FromView
         }
 
         if ($this->request->filled('village')) {
-            $query->where('village', $this->request->village);
+            // dd($this->request->filled('village'));
+            // dd(AdLevelThree::find($this->request->village)->name);
+            $nameofvillagebaseddonid=AdLevelThree::find($this->request->village)->name;
+            
+            $query->where('village', $nameofvillagebaseddonid);
+            // dd($query);
         }
 
         $data = $query->get();
