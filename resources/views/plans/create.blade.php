@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h2 class="mb-4">إضافة خطة دعم</h2>
 
-    <form action="{{ route('plans.store') }}" method="POST">
+    <form action="{{ route('plans.store-step1') }}" method="POST">
         @csrf
 
         <div class="mb-3">
@@ -27,8 +27,17 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">حفظ</button>
-        <a href="{{ route('plans.index') }}" class="btn btn-secondary">إلغاء</a>
+          <div class="form-group">
+                    <label for="beneficiaries_count">عدد المستفيدين</label>
+                    <input type="number" class="form-control" id="beneficiaries_count" 
+                           name="beneficiaries_count" min="1" required>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-arrow-right ml-2"></i> التالي
+                    </button>
+                </div>
     </form>
 </div>
 @endsection

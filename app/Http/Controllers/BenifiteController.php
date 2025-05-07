@@ -22,16 +22,16 @@ class BenifiteController extends Controller
     // public function index(Request $request)
 
     public function getUnits(Request $request)
-{
-    $units = AdLevelTwo::where('ad_level_one_id', $request->city_id)->get();
-    return response()->json($units);
-}
+    {
+        $units = AdLevelTwo::where('ad_level_one_id', $request->city_id)->get();
+        return response()->json($units);
+    }
 
-public function getVillages(Request $request)
-{
-    $villages = AdLevelThree::where('ad_level_two_id', $request->unit_id)->get();
-    return response()->json($villages);
-}
+    public function getVillages(Request $request)
+    {
+        $villages = AdLevelThree::where('ad_level_two_id', $request->unit_id)->get();
+        return response()->json($villages);
+    }
 
     // {
     //     $villages = AdLevelTwo::select('name')
@@ -84,92 +84,111 @@ public function getVillages(Request $request)
         $villages = AdLevelThree::select('name')->distinct()->orderBy('name', 'asc')->pluck('name');
         $units = AdLevelTwo::select('name')->distinct()->orderBy('name', 'asc')->pluck('name');
         $mainbigvillages = AdLevelOne::select('name')->distinct()->orderBy('name', 'asc')->pluck('name');
-    
+
         // Start query
         $query = Benifite::query();
         // Apply filters
-        if ($request->filled('village')){
+        if ($request->filled('village')) {
 
 
-      
-        $nameofvillagebaseddonid=AdLevelThree::find($request->village)->name;
-        // dd($nameofvillagebaseddonid);
+
+            $nameofvillagebaseddonid = AdLevelThree::find($request->village)->name;
+            // dd($nameofvillagebaseddonid);
 
             $query->where('village', operator: $nameofvillagebaseddonid);
         }
-    
+
         if ($request->filled('unit')) {
 
-            $nameofadmbaseddonid=AdLevelTwo::find($request->unit)->name;
+            $nameofadmbaseddonid = AdLevelTwo::find($request->unit)->name;
             // dd($request->unit, $nameofadmbaseddonid);
             // $query->where('adminstratour_unit', $nameofadmbaseddonid);
+            // dd(vars: $nameofadmbaseddonid);
             $query->where('adminstratour_unit', 'LIKE', '%' . $nameofadmbaseddonid . '%');
         }
-    
+        if ($request->filled('city')) {
+            // $nameofleveltwo = AdLevelone::find($request->city)?->adLevelTwos->pluck('name');
+            // if ($nameofleveltwo && $nameofleveltwo->isNotEmpty()) {
+            //     $query->whereIn('adminstratour_unit', $nameofleveltwo);
+            // }
+            $normalizedNames = AdLevelone::find($request->city)?->adLevelTwos
+    ->pluck('name')
+    ->map(function ($name) {
+        return strtolower(str_replace('_', ' ', $name)); // normalize
+    });
+
+$query->whereIn(
+    DB::raw("LOWER(REPLACE(adminstratour_unit, '_', ' '))"),
+    $normalizedNames->toArray()
+);
+
+        }
+        
         if ($request->filled('min_age')) {
             $query->where('age', '>=', $request->min_age);
         }
-    
+
         if ($request->filled('max_age')) {
             $query->where('age', '<=', $request->max_age);
         }
-    
+
         if ($request->filled('name')) {
             $query->where('name', 'LIKE', '%' . $request->name . '%');
         }
-    
+
         if ($request->filled('sick_type')) {
             $query->where('sick_type', 'LIKE', '%' . $request->sick_type . '%');
         }
-    
+
         // Paginate
         $data = $query->paginate(100);
         $perPage = $request->input('data_count', 10);  // Default to 10 if no value is provided
 
-    $data = $query->paginate($perPage);
-    $cities = AdLevelOne::all();
-    
-    
+        $data = $query->paginate($perPage);
+        $cities = AdLevelOne::all();
+$querylenght=$query->count();
+// dd($querylenght);
+
         // Pass all required variables to the view
-        return view('benifites.benifites', compact('data','cities', 'villages', 'units', 'mainbigvillages'));
+        return view('benifites.benifites', compact('data','querylenght', 'cities', 'villages', 'units', 'mainbigvillages'));
     }
     public function export(Request $request)
-{
-    return Excel::download(new BenifitesExport($request), 'benifites.xlsx');
-}
-
-public function exportPdf(Request $request)
-{
-    $query = Benifite::query();
-
-    // Apply filters (copy logic from index)
-    if ($request->filled('name')) {
-        $query->where('name', 'LIKE', '%' . $request->name . '%');
+    {
+        return Excel::download(new BenifitesExport($request), 'benifites.xlsx');
     }
 
-    if ($request->filled('sick_type')) {
-        $query->where('sick_type', 'LIKE', '%' . $request->sick_type . '%');
+    public function exportPdf(Request $request)
+    {
+        $query = Benifite::query();
+
+        // Apply filters (copy logic from index)
+        if ($request->filled('name')) {
+            $query->where('name', 'LIKE', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('sick_type')) {
+            $query->where('sick_type', 'LIKE', '%' . $request->sick_type . '%');
+        }
+
+        if ($request->filled('min_age')) {
+            $query->where('age', '>=', $request->min_age);
+        }
+
+        if ($request->filled('max_age')) {
+            $query->where('age', '<=', $request->max_age);
+        }
+
+        if ($request->filled('village')) {
+            $query->where('village', $request->village);
+        }
+
+        $data = $query->get();
+
+        $pdf = Pdf::loadView('benifites.pdf', compact('data'))
+            ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
+
+        return $pdf->download('benifites.pdf');
     }
-
-    if ($request->filled('min_age')) {
-        $query->where('age', '>=', $request->min_age);
-    }
-
-    if ($request->filled('max_age')) {
-        $query->where('age', '<=', $request->max_age);
-    }
-
-    if ($request->filled('village')) {
-        $query->where('village', $request->village);
-    }
-
-    $data = $query->get();
-
-    $pdf = Pdf::loadView('benifites.pdf', compact('data'))
-        ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
-
-    return $pdf->download('benifites.pdf');
-}
 
 
 
@@ -193,19 +212,19 @@ public function exportPdf(Request $request)
             'sickers_num' => 'nullable|string|max:190',
             'eaka' => 'nullable|string|max:136',
         ]);
-    // dd($request->all());
+        // dd($request->all());
         Benifite::create($request->all());
-    
+
         return redirect()->route('benifites.benifites')->with('success', 'تمت إضافة المستفيد بنجاح');
     }
     public function create()
-{
-    $villages = AdLevelThree::all();   // Get all villages (AdLevelThree)
-    $adminUnits = AdLevelTwo::all();   // Get all admin units (AdLevelTwo)
+    {
+        $villages = AdLevelThree::all();   // Get all villages (AdLevelThree)
+        $adminUnits = AdLevelTwo::all();   // Get all admin units (AdLevelTwo)
 
-    // Pass both variables to the view
-    return view('benifites.create', compact('villages', 'adminUnits'));
-}
+        // Pass both variables to the view
+        return view('benifites.create', compact('villages', 'adminUnits'));
+    }
 
 
 
@@ -229,31 +248,27 @@ public function exportPdf(Request $request)
 
         return redirect()->route('benifites.benifites')->with('success', 'تم حذف المستفيد بنجاح!');
     }
-    
+
     public function getVillagesByAdminUnit($adminUnitId)
     {
-        // Ensure that the villages are being fetched correctly
         $villages = AdLevelThree::where('ad_level_two_id', $adminUnitId)->get();
-    
+
         // Check if villages are found
         if ($villages->isEmpty()) {
             return response()->json([], 404); // Return empty array if no villages found
         }
-    
+
         return response()->json($villages);
     }
     public function edit($id)
-{
-    // Get the beneficiary by ID
-    $benifites = Benifite::findOrFail($id);
+    {
+        // Get the beneficiary by ID
+        $benifites = Benifite::findOrFail($id);
 
-    // Get all administrative units (you can modify this to fit your actual structure)
-    $adminUnits = AdLevelOne::all();  // Make sure the AdminUnit model is correctly defined
+        // Get all administrative units (you can modify this to fit your actual structure)
+        $adminUnits = AdLevelTWo::all();  // Make sure the AdminUnit model is correctly defined
 
-    // Pass both the beneficiary and the admin units to the view
-    return view('benifites.edit', compact('benifites', 'adminUnits'));
-}
-
-    
-
+        // Pass both the beneficiary and the admin units to the view
+        return view('benifites.edit', compact('benifites', 'adminUnits'));
+    }
 }

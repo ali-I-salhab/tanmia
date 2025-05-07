@@ -11,4 +11,8 @@ class Supporter extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'email'];
+    public function plans()
+{
+    return $this->hasMany(\App\Models\Plan::class);
+}
 }
